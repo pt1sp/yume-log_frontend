@@ -11,20 +11,22 @@ const DreamForm: React.FC = () => {
     e.preventDefault();
     
     const userId = '1';
+    const apiUrl = process.env.REACT_APP_API_URL; // 環境変数からAPIのURLを取得
 
     try {
-      await axios.post('http://localhost:4000/api/dreams', {
+      await axios.post(`${apiUrl}/dreams`, { // APIのURLを使用
         user_id: userId,
         title,
         content,
         tag,
         location,
       });
-      console.log(userId);
       alert('夢が投稿されました~!');
 
-      const response = await axios.get('http://localhost:4000/api/dreams/display');
+      const response = await axios.get(`${apiUrl}/dreams/display`); // APIのURLを使用
       console.log(response.data);
+
+      // フォームの入力値をリセット
       setTitle('');
       setContent('');
       setTag('');

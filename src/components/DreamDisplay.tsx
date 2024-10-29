@@ -23,11 +23,13 @@ interface Dream {
 }
 
 const DreamDisplay: React.FC = () => {
-    const [dreams, setDreams] = useState<Dream[]>([]);
+  const [dreams, setDreams] = useState<Dream[]>([]);
   
-    useEffect(() => {
-      const fetchDreams = async () => {
-        const response = await axios.get('http://localhost:4000/api/dreams/display');
+  useEffect(() => {
+    const fetchDreams = async () => {
+      const apiUrl = process.env.REACT_APP_API_URL; // 環境変数からAPIのURLを取得
+      try {
+        const response = await axios.get(`${apiUrl}/dreams/display`); // APIのURLを使用
         console.log(response.data);
         const formattedDreams = response.data.map((dream: any) => ({
           ...dream,
@@ -43,36 +45,38 @@ const DreamDisplay: React.FC = () => {
           },
         }));
         setDreams(formattedDreams);
-      };
-    
-      fetchDreams();
-      
-    }, []);
-  
-    return (
-      <div>
-        <h1>他の人の夢を見る</h1>
-        {dreams.length > 0 ? (
-          dreams.map(dream => (
-            <div key={dream.id} className="dream-card">
-              <Link to={`/dream/${dream.id}`}>
-                <h2 className="dream-title">{dream.title}</h2>
-                <p>👍<span>{dream.reactions.ok} </span> 
-                😊<span>{dream.reactions.happy} </span> 
-                😱<span>{dream.reactions.scary} </span> 
-                😢<span>{dream.reactions.sad} </span> 
-                😔<span>{dream.reactions.lonely} </span> 
-                😄<span>{dream.reactions.fun} </span> 
-                😲<span>{dream.reactions.surprised} </span> 
-                👎<span>{dream.reactions.dislike} </span> </p>
-              </Link>
-            </div>
-          ))
-        ) : (
-          <p>夢がありません</p>
-        )}
-      </div>
-    );
+      } catch (error) {
+        console.error('エラーが発生しました', error);
+      }
+    };
+
+    fetchDreams();
+  }, []);
+
+  return (
+    <div>
+      <h1>他の人の夢を見る</h1>
+      {dreams.length > 0 ? (
+        dreams.map(dream => (
+          <div key={dream.id} className="dream-card">
+            <Link to={`/dream/${dream.id}`}>
+              <h2 className="dream-title">{dream.title}</h2>
+              <p>👍<span>{dream.reactions.ok} </span> 
+              😊<span>{dream.reactions.happy} </span> 
+              😱<span>{dream.reactions.scary} </span> 
+              😢<span>{dream.reactions.sad} </span> 
+              😔<span>{dream.reactions.lonely} </span> 
+              😄<span>{dream.reactions.fun} </span> 
+              😲<span>{dream.reactions.surprised} </span> 
+              👎<span>{dream.reactions.dislike} </span> </p>
+            </Link>
+          </div>
+        ))
+      ) : (
+        <p>夢がありません</p>
+      )}
+    </div>
+  );
 };
 
 export default DreamDisplay;
