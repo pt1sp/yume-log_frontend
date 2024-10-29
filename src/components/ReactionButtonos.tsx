@@ -1,10 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 const ReactionButtons: React.FC<{ dreamId: number }> = ({ dreamId }) => {
   const handleReaction = async (reaction: string) => {
     try {
-      await axios.post('http://localhost:4000/api/reactions', {
+      await axios.post(`${apiUrl}/reactions`, {
         dream_id: dreamId,
         reaction_type: reaction,
       });

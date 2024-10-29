@@ -8,8 +8,9 @@ const RegisterForm: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
     try {
-      await axios.post('http://localhost:4000/api/register', { username, password });
+      await axios.post(`${apiUrl}/register`, { username, password });
       setMessage('登録が成功しました！ログインしてください。');
     } catch (error) {
       setMessage('登録に失敗しました。');

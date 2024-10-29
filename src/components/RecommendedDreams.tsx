@@ -3,14 +3,20 @@ import axios from 'axios';
 import { Dream } from '../types';
 import { useNavigate } from 'react-router-dom';
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 const RecommendedDreams: React.FC = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDreams = async () => {
-      const response = await axios.get('http://localhost:4000/api/dreams/recommended');
-      setDreams(response.data);
+      try {
+        const response = await axios.get(`${apiUrl}/dreams/recommended`);
+        setDreams(response.data);
+      } catch (error) {
+        console.error('Error fetching recommended dreams:', error);
+      }
     };
 
     fetchDreams();
@@ -18,13 +24,9 @@ const RecommendedDreams: React.FC = () => {
 
   return (
     <div className="recommended-dreams">
-      <button onClick={() => Navigate('/my-dreams')}>自分の夢を表示</button>
+      <button onClick={() => navigate('/register')}>ユーザー新規登録</button>
     </div>
   );
 };
-
-
-
-
 
 export default RecommendedDreams;

@@ -2,18 +2,21 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 const DreamDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [dream, setDream] = useState<any>(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchDreamDetail = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/dreams/${id}`);
+                const response = await axios.get(`${apiUrl}/dreams/${id}`);
                 setDream(response.data);
             } catch (error) {
                 console.error('夢の詳細を取得できませんでした:', error);
-                // ハロー
+                setError('夢の詳細を取得できませんでした。再試行してください。');
             }
         };
 
@@ -21,19 +24,24 @@ const DreamDetail: React.FC = () => {
     }, [id]);
 
     const handleReaction = async (reactionType: string) => {
-        await axios.post(`http://localhost:4000/api/dreams/${id}/react`, { reaction: reactionType });
-        
-        setDream((prevDream: any) => ({
-            ...prevDream,
-            reactions: {
-                ...prevDream.reactions,
-                [reactionType]: (prevDream.reactions[reactionType] || 0) + 1,
-            },
-        }));
+        try {
+            await axios.post(`${apiUrl}/dreams/${id}/react`, { reaction: reactionType });
+            setDream((prevDream: any) => ({
+                ...prevDream,
+                reactions: {
+                    ...prevDream.reactions,
+                    [reactionType]: (prevDream.reactions[reactionType] || 0) + 1,
+                },
+            }));
+        } catch (error) {
+            console.error('リアクションの追加に失敗しました:', error);
+            setError('リアクションの追加に失敗しました。再試行してください。');
+        }
     };
 
     return (
         <div>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             {dream ? (
                 <>
                     <h1>{dream.title}</h1>

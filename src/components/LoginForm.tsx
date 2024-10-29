@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 const LoginForm: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -17,9 +19,11 @@ const LoginForm: React.FC = () => {
             return;
         }
 
-        setLoading(true);  // ローディング開始
+        setLoading(true);
+        setError('');
+
         try {
-            const response = await axios.post('http://localhost:4000/api/login', { username, password });
+            const response = await axios.post(`${apiUrl}/login`, { username, password });
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', username);
             localStorage.setItem('user_id', response.data.user_id);
@@ -31,12 +35,12 @@ const LoginForm: React.FC = () => {
                 setError('サーバーエラーが発生しました。');
             }
         } finally {
-            setLoading(false);  // ローディング終了
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="login-form">
             <h1>ログイン</h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <input
